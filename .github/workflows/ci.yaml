@@ -27,15 +27,14 @@ jobs:
           cache: pip
           cache-dependency-path: |
             requirements.txt
+            requirements-git.txt
             requirements-dev.txt
 
       - name: Install lint dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install git+https://github.com/IoT-Hub-Alpha/logging-lib.git@dev
-          pip install git+https://github.com/IoT-Hub-Alpha/kafka-consumer-producer-lib.git@dev
-          pip install -r requirements.txt --no-deps
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements-git.txt
+          pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
       - name: Lint (black)
@@ -71,14 +70,13 @@ jobs:
           cache: pip
           cache-dependency-path: |
             requirements.txt
+            requirements-git.txt
             requirements-dev.txt
       - name: Install test dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install git+https://github.com/IoT-Hub-Alpha/logging-lib.git@dev
-          pip install git+https://github.com/IoT-Hub-Alpha/kafka-consumer-producer-lib.git@dev
-          pip install -r requirements.txt --no-deps
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements-git.txt
+          pip install -r requirements.txt
           pip install -r requirements-dev.txt
       - name: Run tests with coverage gate
         run: |
