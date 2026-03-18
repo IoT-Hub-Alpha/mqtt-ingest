@@ -1,6 +1,51 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mqtt-ingest"
+version = "0.1.0"
+description = "Independent MQTT to Kafka ingestion microservice for IoT Hub Alpha"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    {name = "IoT Hub Alpha Team", email = "dev@iot-hub.local"},
+]
+license = {text = "MIT"}
+keywords = ["mqtt", "kafka", "iot", "telemetry", "ingestion", "microservice"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/IoT-Hub-Alpha/mqtt-ingest"
+Repository = "https://github.com/IoT-Hub-Alpha/mqtt-ingest.git"
+Issues = "https://github.com/IoT-Hub-Alpha/mqtt-ingest/issues"
+
 [tool.black]
-line-length = 88
-target-version = ["py311"]
-#exclude = '''
-#/path/to/dir/.*
-#'''
+line-length = 100
+target-version = ["py313"]
+skip-string-normalization = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--cov=app --cov-report=term-missing --cov-report=html:htmlcov --cov-fail-under=80"
