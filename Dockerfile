@@ -1,6 +1,6 @@
 # Multi-stage build for mqtt-ingest service
 # Stage 1: Builder - install all dependencies
-FROM python:3.13-slim as builder
+FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
@@ -10,23 +10,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements files and source code for local packages
+# Copy requirements files
 COPY mqtt-ingest/requirements.txt mqtt-ingest/requirements-git.txt ./
-COPY logging-lib /tmp/logging-lib
-COPY kafka-consumer-producer-lib /tmp/kafka-consumer-producer-lib
 
 # Install Python dependencies to virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir /tmp/logging-lib && \
-    pip install --no-cache-dir /tmp/kafka-consumer-producer-lib && \
-    pip install --no-cache-dir -r requirements.txt && \
-    rm -rf /tmp/logging-lib /tmp/kafka-consumer-producer-lib
+    pip install --no-cache-dir -r requirements-git.txt && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime - minimal image with only runtime dependencies
-FROM python:3.13-slim as runtime
+FROM python:3.13-slim AS runtime
 
 WORKDIR /app
 
