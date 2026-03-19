@@ -34,7 +34,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Suppress verbose Kafka client logs
-logging.getLogger('confluent_kafka').setLevel(logging.WARNING)
+logging.getLogger("confluent_kafka").setLevel(logging.WARNING)
 
 # Global instances
 mqtt_client: Optional[MQTTClient] = None
@@ -87,7 +87,6 @@ def setup_logging(config: Settings) -> None:
 def on_mqtt_message(topic: str, payload: bytes) -> None:
     """Handle MQTT message and publish to Kafka."""
     import time
-    from . import metrics
 
     if not kafka_producer:
         logger.error("kafka_producer_not_initialized")

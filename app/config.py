@@ -1,7 +1,7 @@
 """Configuration management for MQTT ingestion microservice."""
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -13,8 +13,12 @@ class Settings(BaseSettings):
     mqtt_topic: str = Field(default="telemetry/#", alias="MQTT_TOPIC")
     mqtt_qos: int = Field(default=1, alias="MQTT_QOS", ge=0, le=2)
     mqtt_connect_timeout: int = Field(default=10, alias="MQTT_CONNECT_TIMEOUT")
-    mqtt_reconnect_min_delay: float = Field(default=1.0, alias="MQTT_RECONNECT_MIN_DELAY")
-    mqtt_reconnect_max_delay: float = Field(default=60.0, alias="MQTT_RECONNECT_MAX_DELAY")
+    mqtt_reconnect_min_delay: float = Field(
+        default=1.0, alias="MQTT_RECONNECT_MIN_DELAY"
+    )
+    mqtt_reconnect_max_delay: float = Field(
+        default=60.0, alias="MQTT_RECONNECT_MAX_DELAY"
+    )
 
     # Kafka
     kafka_brokers: str = Field(default="kafka:9092", alias="KAFKA_BROKERS")
@@ -35,11 +39,11 @@ class Settings(BaseSettings):
     service_name: str = Field(default="mqtt-ingest", alias="SERVICE_NAME")
     environment: str = Field(default="development", alias="ENVIRONMENT")
 
-    class Config:
-        """Pydantic settings configuration."""
-
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
 
     @property
     def is_production(self) -> bool:

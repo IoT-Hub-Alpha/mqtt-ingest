@@ -33,7 +33,9 @@ async def health_check(mqtt_client: Annotated[MQTTClient, Depends()]) -> dict[st
 
 
 @router.get("/ready")
-async def readiness_check(mqtt_client: Annotated[MQTTClient, Depends()]) -> dict[str, Any]:
+async def readiness_check(
+    mqtt_client: Annotated[MQTTClient, Depends()],
+) -> dict[str, Any]:
     """
     Readiness probe for Kubernetes.
 

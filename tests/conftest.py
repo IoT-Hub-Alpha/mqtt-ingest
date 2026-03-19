@@ -1,8 +1,27 @@
 """Pytest configuration and shared fixtures."""
 
+import sys
 import json
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
+
+# Mock external dependencies that aren't installed in test environment
+paho_mock = MagicMock()
+paho_mqtt_mock = MagicMock()
+paho_mqtt_enums_mock = MagicMock()
+paho_mqtt_client_mock = MagicMock()
+
+# Set up the module hierarchy
+paho_mqtt_mock.enums = paho_mqtt_enums_mock
+paho_mqtt_mock.client = paho_mqtt_client_mock
+paho_mock.mqtt = paho_mqtt_mock
+
+sys.modules["IoTKafka"] = MagicMock()
+sys.modules["paho"] = paho_mock
+sys.modules["paho.mqtt"] = paho_mqtt_mock
+sys.modules["paho.mqtt.enums"] = paho_mqtt_enums_mock
+sys.modules["paho.mqtt.client"] = paho_mqtt_client_mock
+sys.modules["confluent_kafka"] = MagicMock()
 
 
 @pytest.fixture

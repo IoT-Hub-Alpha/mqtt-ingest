@@ -52,19 +52,24 @@ class MQTTClient:
         Strategy: delay = min(2^n, max_delay) + random_jitter
         """
         base_delay = min(
-            2 ** self._reconnect_count,
+            2**self._reconnect_count,
             self.config.mqtt_reconnect_max_delay,
         )
         jitter = random.uniform(-base_delay * 0.1, base_delay * 0.1)
         return max(self.config.mqtt_reconnect_min_delay, base_delay + jitter)
 
-    def _on_connect(self, client: mqtt.Client, userdata: dict, flags: dict, rc: int, properties) -> None:
+    def _on_connect(
+        self, client: mqtt.Client, userdata: dict, flags: dict, rc: int, properties
+    ) -> None:
         """Handle MQTT connection."""
         if rc == 0:
             logger.info(
                 "mqtt_connected",
                 extra={
-                    "broker": f"{self.config.mqtt_broker_host}:{self.config.mqtt_broker_port}",
+                    "broker": (
+                        f"{self.config.mqtt_broker_host}:"
+                        f"{self.config.mqtt_broker_port}"
+                    ),
                     "topic": self.config.mqtt_topic,
                 },
             )
@@ -88,7 +93,9 @@ class MQTTClient:
             self._is_connected = False
             metrics.mqtt_connection_status.set(0)
 
-    def _on_message(self, client: mqtt.Client, userdata: dict, msg: mqtt.MQTTMessage) -> None:
+    def _on_message(
+        self, client: mqtt.Client, userdata: dict, msg: mqtt.MQTTMessage
+    ) -> None:
         """Handle received MQTT message."""
         try:
             logger.debug(
@@ -116,7 +123,9 @@ class MQTTClient:
                 reason="processing_error",
             ).inc()
 
-    def _on_disconnect(self, client: mqtt.Client, userdata: dict, flags: dict, rc: int, properties) -> None:
+    def _on_disconnect(
+        self, client: mqtt.Client, userdata: dict, flags: dict, rc: int, properties
+    ) -> None:
         """Handle MQTT disconnection."""
         self._is_connected = False
         metrics.mqtt_connection_status.set(0)

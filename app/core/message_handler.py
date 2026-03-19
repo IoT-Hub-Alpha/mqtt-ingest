@@ -36,6 +36,10 @@ def extract_serial_number(topic: str, payload: dict[str, Any]) -> Optional[str]:
     if len(parts) >= 2:
         return parts[-1]
 
+    # For single-segment topics, only return if payload has data
+    if len(parts) == 1 and payload:
+        return parts[0]
+
     return None
 
 
@@ -89,18 +93,10 @@ def build_idempotency_key(
 
     # If we found stable fields, use them to build key
     if stable_fields:
-        base = json.dumps(
-            {
-                "serial_number": serial_number,
-                "topic": topic,
-                "fields": stable_fields,
-            },
-            sort_keys=True,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-        digest = hashlib.sha256(base.encode("utf-8")).hexdigest()
-        return f"mqtt:{digest}"
+        # Sort fields by key and concatenate values
+        field_parts = [stable_fields[k] for k in sorted(stable_fields.keys())]
+        field_str = "|".join(field_parts)
+        return f"mqtt:{field_str}"
 
     # Fall back to hash of full payload
     hasher = hashlib.sha256()
@@ -160,7 +156,9 @@ def build_raw_event(
     return event
 
 
-def validate_mqtt_payload(payload: bytes) -> tuple[Optional[dict[str, Any]], Optional[str]]:
+def validate_mqtt_payload(
+    payload: bytes,
+) -> tuple[Optional[dict[str, Any]], Optional[str]]:
     """
     Parse and validate MQTT payload.
 
@@ -197,11 +195,11 @@ def handle_device_status(topic: str, payload_bytes: bytes) -> None:
         payload_bytes: Status message bytes
     """
     parts = topic.strip("/").split("/")
-    if len(parts) < 2:
+    if len(parts) < 2 or parts[-1] != "status":
         logger.warning("device_status_invalid_topic", extra={"topic": topic})
         return
 
-    serial_number = parts[-2] if parts[-1] == "status" else parts[-1]
+    serial_number = parts[-2]
 
     try:
         status = payload_bytes.decode("utf-8", errors="replace").strip().lower()

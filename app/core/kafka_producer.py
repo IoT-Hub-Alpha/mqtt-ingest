@@ -1,8 +1,8 @@
 """Kafka producer wrapper for telemetry ingestion.
 
-Thin wrapper around IoT-Hub-Alpha kafka-consumer-producer-lib that adds metrics tracking.
-Library handles: type conversion (dict→bytes), retries, topic validation.
-Wrapper adds: Prometheus metrics on delivery confirmation.
+Thin wrapper around IoT-Hub-Alpha kafka-consumer-producer-lib that adds
+metrics tracking. Library handles: type conversion (dict→bytes), retries,
+topic validation. Wrapper adds: Prometheus metrics on delivery confirmation.
 """
 
 import logging
@@ -30,7 +30,10 @@ def _suppress_stderr():
 
 
 class KafkaProducer:
-    """Metrics-tracking wrapper for IoTKafkaProducer from kafka-consumer-producer-lib."""
+    """Metrics-tracking wrapper for IoTKafkaProducer.
+
+    Wraps kafka-consumer-producer-lib with Prometheus metrics tracking.
+    """
 
     def __init__(self, config: Settings):
         """
@@ -65,7 +68,11 @@ class KafkaProducer:
                 "kafka_producer_not_available",
                 extra={
                     "error": str(exc),
-                    "install": "pip install git+https://github.com/IoT-Hub-Alpha/kafka-consumer-producer-lib.git@dev",
+                    "install": (
+                        "pip install "
+                        "git+https://github.com/IoT-Hub-Alpha/"
+                        "kafka-consumer-producer-lib.git@dev"
+                    ),
                 },
             )
             raise
