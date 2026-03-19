@@ -3,7 +3,7 @@
 import json
 import pytest
 
-from app import message_handler
+from app.core import message_handler
 
 
 class TestValidateMqttPayload:
@@ -37,7 +37,7 @@ class TestValidateMqttPayload:
 
     def test_empty_payload(self):
         """Empty payload should return error."""
-        payload = b''
+        payload = b""
         data, error = message_handler.validate_mqtt_payload(payload)
 
         assert data is None
@@ -46,7 +46,7 @@ class TestValidateMqttPayload:
 
     def test_invalid_unicode_encoding(self):
         """Invalid UTF-8 encoding should return error."""
-        payload = b'\x80\x81\x82'
+        payload = b"\x80\x81\x82"
         data, error = message_handler.validate_mqtt_payload(payload)
 
         assert data is None
@@ -55,7 +55,7 @@ class TestValidateMqttPayload:
 
     def test_json_array_not_dict(self):
         """JSON array should return error (requires dict)."""
-        payload = b'[1, 2, 3]'
+        payload = b"[1, 2, 3]"
         data, error = message_handler.validate_mqtt_payload(payload)
 
         assert data is None
@@ -73,7 +73,7 @@ class TestValidateMqttPayload:
 
     def test_json_number_not_dict(self):
         """JSON number should return error (requires dict)."""
-        payload = b'123'
+        payload = b"123"
         data, error = message_handler.validate_mqtt_payload(payload)
 
         assert data is None
@@ -82,7 +82,7 @@ class TestValidateMqttPayload:
 
     def test_empty_dict(self):
         """Empty dict should parse successfully."""
-        payload = b'{}'
+        payload = b"{}"
         data, error = message_handler.validate_mqtt_payload(payload)
 
         assert data == {}
@@ -192,7 +192,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key == "custom-key-123"
 
@@ -204,7 +207,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key == "custom-key-123"
 
@@ -216,7 +222,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key.startswith("mqtt:")
         assert "msg-123" in key
@@ -229,7 +238,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key.startswith("mqtt:")
 
@@ -241,7 +253,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key.startswith("mqtt:")
 
@@ -253,7 +268,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key.startswith("mqtt:")
 
@@ -265,7 +283,10 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key.startswith("mqtt:")
         assert len(key) > 10  # Should be mqtt: + hash
@@ -278,10 +299,16 @@ class TestBuildIdempotencyKey:
         payload_bytes = json.dumps(payload).encode()
 
         key1 = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         key2 = message_handler.build_idempotency_key(
-            topic=topic, serial_number=serial, payload=payload, payload_bytes=payload_bytes
+            topic=topic,
+            serial_number=serial,
+            payload=payload,
+            payload_bytes=payload_bytes,
         )
         assert key1 == key2
 
@@ -356,7 +383,9 @@ class TestBuildRawEvent:
         payload = {"temp": 25}
         serial = "device123"
 
-        event = message_handler.build_raw_event(payload, serial_number=serial, ingest_index=3)
+        event = message_handler.build_raw_event(
+            payload, serial_number=serial, ingest_index=3
+        )
 
         assert event["ingest_index"] == 3
 
@@ -407,7 +436,9 @@ class TestBuildRawEvent:
         payload = {"temp": 25}
 
         with pytest.raises(ValueError, match="ingest_index must be non-negative"):
-            message_handler.build_raw_event(payload, serial_number="device123", ingest_index=-1)
+            message_handler.build_raw_event(
+                payload, serial_number="device123", ingest_index=-1
+            )
 
     def test_invalid_ingest_index_non_integer(self):
         """Non-integer ingest_index should raise ValueError."""
