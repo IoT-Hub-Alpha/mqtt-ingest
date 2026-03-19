@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Optional
 
-from . import metrics
+from app.services import metrics
 
 logger = logging.getLogger(__name__)
 

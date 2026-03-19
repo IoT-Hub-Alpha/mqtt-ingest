@@ -7,8 +7,8 @@ from typing import Callable, Optional
 import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
 
-from . import metrics
-from .config import Settings
+from app.config import Settings
+from app.services import metrics
 
 logger = logging.getLogger(__name__)
 

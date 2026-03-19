@@ -11,11 +11,14 @@ from typing import Optional
 from fastapi import Depends, FastAPI, Request
 from prometheus_client import make_asgi_app, start_http_server
 
-from . import message_handler, metrics
+from .api import health, router as api_router
 from .config import Settings, get_settings
-from .health import router as health_router
-from .kafka_producer import KafkaProducer
-from .mqtt_client import MQTTClient
+from .core import (
+    MQTTClient,
+    KafkaProducer,
+    message_handler,
+)
+from .services import metrics
 
 try:
     from iot_logging import (
@@ -296,8 +299,11 @@ def create_app() -> FastAPI:
     if FastAPIRequestContextMiddleware:
         app.add_middleware(FastAPIRequestContextMiddleware)
 
+    # Include API routes
+    app.include_router(api_router)
+
     # Include health check routes
-    app.include_router(health_router)
+    app.include_router(health.router)
 
     # Mount Prometheus metrics
     metrics_app = make_asgi_app()
@@ -310,15 +316,6 @@ def create_app() -> FastAPI:
         return mqtt_client
 
     app.dependency_overrides[MQTTClient] = get_mqtt_client
-
-    @app.get("/")
-    async def root() -> dict:
-        """Root endpoint."""
-        return {
-            "service": config.service_name,
-            "version": "0.1.0",
-            "status": "running",
-        }
 
     return app
 

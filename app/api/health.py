@@ -4,8 +4,7 @@ from typing import Any, Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from . import metrics
-from .mqtt_client import MQTTClient
+from app.core import MQTTClient
 
 router = APIRouter(prefix="", tags=["health"])
 

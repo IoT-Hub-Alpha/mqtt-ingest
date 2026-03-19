@@ -11,8 +11,8 @@ import sys
 from contextlib import contextmanager
 from typing import Any, Optional
 
-from . import metrics
-from .config import Settings
+from app.config import Settings
+from app.services import metrics
 
 logger = logging.getLogger(__name__)
 
